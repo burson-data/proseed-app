@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->id();
+            $table->string('transaction_id')->unique();
+
+            // Foreign Keys (Kunci Asing untuk relasi)
+            $table->foreignId('product_id')->constrained('products');
+            $table->foreignId('partner_id')->constrained('partners');
+            $table->foreignId('user_id')->nullable()->constrained('users'); // user_id sebagai consultant, boleh kosong (nullable)
+
+            // Detail Transaksi
+            $table->dateTime('borrow_date');
+            $table->date('estimated_return_date');
+            $table->date('actual_return_date')->nullable();
+            $table->string('status'); // Contoh: 'Active', 'Completed', 'Late'
+            $table->string('purpose');
+            $table->text('notes')->nullable();
+            $table->text('return_notes')->nullable();
+            $table->text('news_links')->nullable(); // Untuk fitur berita
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('transactions');
+    }
+};
