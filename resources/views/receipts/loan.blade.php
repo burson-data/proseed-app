@@ -111,12 +111,8 @@
                 <td>{{ $transaction->product?->product_name ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <th>IMEI 1</th>
-                <td>{{ $transaction->product?->imei1 ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <th>Color</th>
-                <td>{{ $transaction->product?->model_color ?? 'N/A' }}</td>
+                <th>{{ $transaction->product?->key_attribute_label ?? 'Key Attribute' }}</th>
+                <td>{{ $transaction->product?->key_attribute_value ?? 'N/A' }}</td>
             </tr>
         </tbody>
     </table>

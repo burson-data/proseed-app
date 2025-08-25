@@ -240,6 +240,19 @@ class TransactionController extends Controller
     {
         $transaction->load('product', 'partner');
 
+        // Pastikan token ada sebelum membuat route. Jika belum ada, buat dan simpan.
+        if (empty($transaction->loan_upload_token)) {
+            $transaction->loan_upload_token = \Illuminate\Support\Str::uuid();
+        }
+        if (empty($transaction->return_upload_token)) {
+            $transaction->return_upload_token = \Illuminate\Support\Str::uuid();
+        }
+        
+        // Simpan hanya jika ada token baru yang dibuat
+        if ($transaction->isDirty('loan_upload_token') || $transaction->isDirty('return_upload_token')) {
+            $transaction->save();
+        }
+
         // Template untuk Loan Receipt
         $loanSubject = "Tanda Terima : {$transaction->product?->product_name} untuk {$transaction->partner?->partner_name}";
         $loanUploadLink = route('public.loan.upload.form', $transaction->loan_upload_token);
@@ -304,11 +317,6 @@ class TransactionController extends Controller
         if (empty($recipientEmails)) {
             return response()->json(['message' => 'No recipients selected.'], 422);
         }
-
-        if (empty($transaction->loan_upload_token)) {
-            $transaction->loan_upload_token = \Illuminate\Support\Str::uuid();
-            $transaction->save();
-        }
         
         $transaction->update(['loan_receipt_status' => 'Sent']);
 
@@ -356,11 +364,6 @@ class TransactionController extends Controller
             return response()->json(['message' => 'No recipients selected.'], 422);
         }
         
-        if (empty($transaction->return_upload_token)) {
-            $transaction->return_upload_token = \Illuminate\Support\Str::uuid();
-            $transaction->save();
-        }
-        
         $transaction->update(['return_receipt_status' => 'Sent']);
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipts.return', compact('transaction'));
@@ -373,6 +376,13 @@ class TransactionController extends Controller
         ));
 
         return response()->json(['message' => 'Return receipt has been sent successfully.']);
+    }
+
+    public function downloadLoanReceipt(Transaction $transaction)
+    {
+        $pdf = Pdf::loadView('receipts.loan', compact('transaction'));
+        $fileName = 'loan-receipt-' . $transaction->transaction_id . '.pdf';
+        return $pdf->download($fileName);
     }
 
     public function downloadReturnReceipt(Transaction $transaction)

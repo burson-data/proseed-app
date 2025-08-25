@@ -47,6 +47,19 @@ class Product extends Model
         );
     }
 
+    /**
+     * Get the label for the product's key attribute.
+     */
+    protected function keyAttributeLabel(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                // Ambil dari relasi project, lalu ke relasi displayAttribute
+                return $this->project?->displayAttribute?->name ?? 'Key Attribute';
+            },
+        );
+    }
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);

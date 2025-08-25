@@ -42,4 +42,9 @@ class Project extends Model
     {
         return $this->hasMany(ProductConditionDefinition::class);
     }
+
+    public function displayAttribute(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(ProductAttribute::class, 'display_attribute_id');
+    }
 }
