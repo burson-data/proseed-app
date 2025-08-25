@@ -59,9 +59,12 @@ class ProjectController extends Controller
             ]);
 
             // 2. Assign users if any are selected
-            if (isset($validatedData['users'])) {
-                $project->users()->attach($validatedData['users']);
+            $usersToAttach = $validatedData['users'] ?? [];
+            // Tambahkan user yang sedang login (admin) ke dalam daftar jika belum ada
+            if (!in_array(Auth::id(), $usersToAttach)) {
+                $usersToAttach[] = Auth::id();
             }
+            $project->users()->attach($usersToAttach);
 
             // 3. Create product attributes if defined
             if (isset($validatedData['attributes'])) {
@@ -86,9 +89,6 @@ class ProjectController extends Controller
                 }
             }
 
-            if (isset($validatedData['users'])) {
-                $project->users()->attach($validatedData['users']);
-            }
             if (isset($validatedData['attributes'])) {
                 foreach ($validatedData['attributes'] as $attrData) {
                     $project->productAttributes()->create([
