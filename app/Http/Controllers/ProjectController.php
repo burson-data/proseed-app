@@ -88,26 +88,6 @@ class ProjectController extends Controller
                     ]);
                 }
             }
-
-            if (isset($validatedData['attributes'])) {
-                foreach ($validatedData['attributes'] as $attrData) {
-                    $project->productAttributes()->create([
-                        'name' => $attrData['name'],
-                        'type' => $attrData['type'],
-                        'options' => ($attrData['type'] == 'dropdown' && !empty($attrData['options'])) ? explode(',', $attrData['options']) : null,
-                        'is_required' => isset($attrData['is_required']),
-                    ]);
-                }
-            }
-            if (isset($validatedData['conditions'])) {
-                foreach ($validatedData['conditions'] as $condData) {
-                    $project->conditionDefinitions()->create([
-                        'name' => $condData['name'],
-                        'type' => $condData['type'],
-                        'options' => ($condData['type'] == 'dropdown' && !empty($condData['options'])) ? explode(',', $condData['options']) : null,
-                    ]);
-                }
-            }
         });
 
         return redirect()->route('projects.index')->with('success', 'Project created successfully.');
