@@ -318,19 +318,26 @@ class TransactionController extends Controller
             return response()->json(['message' => 'No recipients selected.'], 422);
         }
         
-        $transaction->load('product.project.displayAttribute', 'partner');
-        $transaction->update(['loan_receipt_status' => 'Sent']);
+        try {
+            $transaction->load('product.project.displayAttribute', 'partner');
+            
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipts.loan', compact('transaction'));
+            
+            Mail::to($recipientEmails)->send(new LoanReceiptMail(
+                $transaction, 
+                $pdf->output(), 
+                $validated['subject'], 
+                $validated['body']
+            ));
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipts.loan', compact('transaction'));
-        
-        Mail::to($recipientEmails)->send(new LoanReceiptMail(
-            $transaction, 
-            $pdf->output(), 
-            $validated['subject'], 
-            $validated['body']
-        ));
+            $transaction->update(['loan_receipt_status' => 'Sent']);
 
-        return response()->json(['message' => 'Loan receipt has been sent successfully.']);
+            return response()->json(['message' => 'Loan receipt has been sent successfully.']);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error sending loan receipt for transaction ' . $transaction->id . ': ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to send email: ' . $e->getMessage()], 500);
+        }
     }
 
     public function sendReturnReceipt(Request $request, Transaction $transaction)
@@ -365,23 +372,31 @@ class TransactionController extends Controller
             return response()->json(['message' => 'No recipients selected.'], 422);
         }
         
-        $transaction->load('product.project.displayAttribute', 'partner');
-        $transaction->update(['return_receipt_status' => 'Sent']);
+        try {
+            $transaction->load('product.project.displayAttribute', 'partner');
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipts.return', compact('transaction'));
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipts.return', compact('transaction'));
 
-        Mail::to($recipientEmails)->send(new ReturnReceiptMail(
-            $transaction, 
-            $pdf->output(), 
-            $validated['subject'], 
-            $validated['body']
-        ));
+            Mail::to($recipientEmails)->send(new ReturnReceiptMail(
+                $transaction, 
+                $pdf->output(), 
+                $validated['subject'], 
+                $validated['body']
+            ));
 
-        return response()->json(['message' => 'Return receipt has been sent successfully.']);
+            $transaction->update(['return_receipt_status' => 'Sent']);
+
+            return response()->json(['message' => 'Return receipt has been sent successfully.']);
+            
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error sending return receipt for transaction ' . $transaction->id . ': ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to send email: ' . $e->getMessage()], 500);
+        }
     }
 
     public function downloadLoanReceipt(Transaction $transaction)
     {
+        $transaction->load('product.project.displayAttribute', 'partner');
         $pdf = Pdf::loadView('receipts.loan', compact('transaction'));
         $fileName = 'loan-receipt-' . $transaction->transaction_id . '.pdf';
         return $pdf->download($fileName);
@@ -389,6 +404,7 @@ class TransactionController extends Controller
 
     public function downloadReturnReceipt(Transaction $transaction)
     {
+        $transaction->load('product.project.displayAttribute', 'partner');
         $pdf = Pdf::loadView('receipts.return', compact('transaction'));
         $fileName = 'return-receipt-' . $transaction->transaction_id . '.pdf';
         return $pdf->download($fileName);
