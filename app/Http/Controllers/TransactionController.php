@@ -318,6 +318,7 @@ class TransactionController extends Controller
             return response()->json(['message' => 'No recipients selected.'], 422);
         }
         
+        $transaction->load('product.project.displayAttribute', 'partner');
         $transaction->update(['loan_receipt_status' => 'Sent']);
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipts.loan', compact('transaction'));
@@ -364,6 +365,7 @@ class TransactionController extends Controller
             return response()->json(['message' => 'No recipients selected.'], 422);
         }
         
+        $transaction->load('product.project.displayAttribute', 'partner');
         $transaction->update(['return_receipt_status' => 'Sent']);
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipts.return', compact('transaction'));
