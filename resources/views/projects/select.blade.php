@@ -1,9 +1,9 @@
 <x-guest-layout>
     <div class="w-full">
-        <h2 class="text-2xl font-bold text-center mb-4 text-light-text dark:text-dark-text">Select a Project</h2>
+        <h2 class="text-2xl font-bold text-center mb-4 text-light-text dark:text-yellow-400">Select a Project</h2>
 
         @if($projects->isEmpty())
-            <p class="text-center text-light-text-muted dark:text-dark-text-muted">You are not assigned to any active projects.</p>
+            <p class="text-center text-light-text-muted dark:text-white">You are not assigned to any active projects.</p>
 
             @if(auth()->user()->role == 'admin')
                 <div class="text-center mt-4 border-t dark:border-gray-600 pt-4">
@@ -22,8 +22,8 @@
                     <form method="POST" action="{{ route('projects.select.submit', $project->id) }}">
                         @csrf
                         <button type="submit" class="w-full text-left p-4 border dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring">
-                            <div class="font-bold text-light-text dark:text-dark-text">{{ $project->name }}</div>
-                            <div class="text-sm text-light-text-muted dark:text-dark-text-muted">{{ $project->description }}</div>
+                            <div class="font-bold text-light-text dark:text-white">{{ $project->name }}</div>
+                            <div class="text-sm text-light-text-muted dark:text-white-text-muted">{{ $project->description }}</div>
                         </button>
                     </form>
                 @endforeach
