@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-light-header dark:bg-dark-surface border-b border-border-color">
+<nav x-data="{ open: false }" class="bg-light-header dark:bg-[#f4ea12] border-b border-border-color fixed top-0 left-0 right-0 z-50">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -8,7 +8,7 @@
                     <a href="{{ route('dashboard') }}">
                         <img src="https://logosandtypes.com/wp-content/uploads/2024/10/burson.svg" class="block h-9 w-auto" alt="Proseed Logo">
                     </a>
-                    <span class="font-semibold text-xl text-light-header-text dark:text-dark-text ml-3">ProSeed</span>
+                    <span class="font-semibold text-xl text-light-header-text dark:text-black ml-3">ProSeed</span>
                 </div>
 
                 <!-- Navigation Links -->
@@ -53,7 +53,7 @@
                 <!-- Settings Dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-light-header-text dark:text-dark-text bg-light-header dark:bg-dark-surface hover:text-gray-300 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-light-header-text dark:text-black bg-light-header dark:bg-[#f4ea12] hover:text-gray-300 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->name }}</div>
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
